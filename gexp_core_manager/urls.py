@@ -15,7 +15,21 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
+from django.contrib.auth.decorators import login_required
+from rest_framework import routers
 
-urlpatterns = [
+from gexp_core_api.views import CategoryViewSet, CountryViewSet, SearchView
+
+router = routers.DefaultRouter()
+router.register(r'categories', CategoryViewSet, base_name='categories')
+router.register(r'countries', CountryViewSet, base_name='countries')
+
+urlpatterns = router.urls + [
     url(r'^admin/', admin.site.urls),
+
+    # this URL passes resource_id in **kw to SearchView
+    # /search/{subcategoryId}/{populationId}/?countryIds=[1,2,3,4,5]&time={fromYear}-{toYear}
+    url(r'^search/(?P<subcategoryId>\d+)/(?P<populationId>\d+)[/]?$', SearchView.as_view(), name='search'),
+    url(r'^search[/]?$', SearchView.as_view(), name='search'),
+
 ]
