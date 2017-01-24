@@ -2,7 +2,7 @@ Django==1.10.4
 django-crispy-forms==1.6.1
 django-filter==1.0.1
 djangorestframework==3.5.3
-gunicorn==19.6.0s
+gunicorn==19.6.0
 Markdown==2.6.7
 pyaml==16.12.2
 pyparsing==2.0.1
