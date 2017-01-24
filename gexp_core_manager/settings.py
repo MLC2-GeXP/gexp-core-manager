@@ -26,6 +26,7 @@ SECRET_KEY = 'bqk#8n(a-1edn$p70-gm808ki2l!6_9)g+dj4^5duzp@i97649'
 DEBUG = True
 
 ALLOWED_HOSTS = [u'gexp-core-api.herokuapp.com', u'127.0.0.1', u'localhost']
+CORS_ORIGIN_ALLOW_ALL = True
 
 
 # Application definition
