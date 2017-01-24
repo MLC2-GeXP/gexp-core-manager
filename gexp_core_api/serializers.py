@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
-from gexp_core_api.model_definitions.definitions import Category, Subcategory, Datasets, ChartData
+from gexp_core_api.model_definitions.definitions import Category, Subcategory, Datasets, ChartData, Population, \
+    InitialData
 
 
 class DatasetsSerializer(serializers.Serializer):
@@ -67,3 +68,33 @@ class CountrySerializer(serializers.Serializer):
         for field, value in validated_data.items():
             setattr(instance, field, value)
         return instance
+
+
+class PopulationSerializer(serializers.Serializer):
+    id = serializers.IntegerField(read_only=True)
+    gender = serializers.CharField(max_length=256)
+
+
+    def create(self, validated_data):
+        return Population(id=None, **validated_data)
+
+    def update(self, instance, validated_data):
+        for field, value in validated_data.items():
+            setattr(instance, field, value)
+        return instance
+
+
+class InitialDataSerializer(serializers.Serializer):
+    countries = CountrySerializer(many=True)
+    categories = CategorySerializer(many=True)
+    population = PopulationSerializer(many=True)
+
+
+    def create(self, validated_data):
+        return InitialData(id=None, **validated_data)
+
+    def update(self, instance, validated_data):
+        for field, value in validated_data.items():
+            setattr(instance, field, value)
+        return instance
+

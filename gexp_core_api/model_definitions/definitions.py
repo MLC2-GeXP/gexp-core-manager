@@ -24,3 +24,14 @@ class Datasets(object):
     def __init__(self, **kwargs):
         for field in ('country_name', 'data'):
             setattr(self, field, kwargs.get(field, None))
+
+class Population(object):
+    def __init__(self, **kwargs):
+        for field in ('id', 'gender'):
+            setattr(self, field, kwargs.get(field, None))
+
+
+class InitialData(object):
+    def __init__(self, **kwargs):
+        for field in ('countries', 'categories', 'population'):
+            setattr(self, field, kwargs.get(field, None))

@@ -6,8 +6,28 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from gexp_core_api import serializers
-from gexp_core_api.model_definitions.definitions import Category, Subcategory, Country
+from gexp_core_api.model_definitions.definitions import Category, Subcategory, Country, Population
 
+chartDatas = {
+
+    1: {
+        'years' : [1950, 1960, 1970, 1980, 1990, 2000],
+        'datasets' : [
+            {
+                'country_name' : 'Germany',
+                'data' : [1.2, 2.5, 5.2, 100, 102, 104.4]
+            },
+            {
+                'country_name' : 'Brazil',
+                'data' : [2.2, 3.5, 4.2, 105, 106, 107.8]
+            },
+            {
+                'country_name' : 'USA',
+                'data' : [10.2, 20.5, 50.2, 100, 12, 104]
+            }
+        ]
+    }
+}
 categories = {
     1: Category(id=1, name='Health', subcategories=[
         Subcategory(id=11, name='Healthy subcategory1'),
@@ -25,6 +45,33 @@ countries = {
     1: Country(id=1, name='Germany'),
     2: Country(id=2, name='USA'),
     3: Country(id=3, name='Brazil')
+}
+initialData = {
+    1: {
+        'countries' : [
+            Country(id=1, name='Germany'),
+            Country(id=2, name='USA'),
+            Country(id=3, name='Brazil')
+        ],
+        'categories': [
+            Category(id=1, name='Health', subcategories=[
+                    Subcategory(id=11, name='Healthy subcategory1'),
+                    Subcategory(id=12, name='Healthy subcategory2'),
+                    Subcategory(id=13, name='Healthy subcategory3')
+                ]),
+            Category(id=2, name='Education', subcategories=[
+                    Subcategory(id=22, name='Education subcategory')
+                ]),
+            Category(id=3, name='Living standards', subcategories=[
+                    Subcategory(id=33, name='Living subcategory')
+                ])
+        ],
+        'population': [
+            Population(id=1, gender='Male'),
+            Population(id=2, gender='Female'),
+            Population(id=3, gender='All')
+        ]
+    }
 }
 
 
@@ -132,30 +179,18 @@ class CountryViewSet(viewsets.ViewSet):
         serializer = serializers.CountrySerializer(instance=countries.values(), many=True)
         return Response(serializer.data)
 
-chartDatas = {
-
-    1: {
-        'years' : [1950, 1960, 1970, 1980, 1990, 2000],
-        'datasets' : [
-            {
-                'country_name' : 'Germany',
-                'data' : [1.2, 2.5, 5.2, 100, 102, 104.4]
-            },
-            {
-                'country_name' : 'Brazil',
-                'data' : [2.2, 3.5, 4.2, 105, 106, 107.8]
-            },
-            {
-                'country_name' : 'USA',
-                'data' : [10.2, 20.5, 50.2, 100, 12, 104]
-            }
-        ]
-    }
-}
 
 class ChartDataViewSet(viewsets.ViewSet):
     serializer_class = serializers.ChartDataSerializer
 
     def list(self, request):
         serializer = serializers.ChartDataSerializer(instance=chartDatas.values(), many=True)
+        return Response(serializer.data)
+
+
+class InitialDataViewSet(viewsets.ViewSet):
+    serializer_class = serializers.InitialDataSerializer
+
+    def list(self, request):
+        serializer = serializers.InitialDataSerializer(instance=initialData.values(), many=True)
         return Response(serializer.data)

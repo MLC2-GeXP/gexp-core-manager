@@ -18,9 +18,11 @@ from django.contrib import admin
 from django.contrib.auth.decorators import login_required
 from rest_framework import routers
 
-from gexp_core_api.views import CategoryViewSet, CountryViewSet, SearchView, DataView, ChartDataViewSet
+from gexp_core_api.views import CategoryViewSet, CountryViewSet, SearchView, DataView, ChartDataViewSet, \
+    InitialDataViewSet
 
 router = routers.DefaultRouter()
+router.register(r'initialdata', InitialDataViewSet, base_name='initial data')
 router.register(r'categories', CategoryViewSet, base_name='categories')
 router.register(r'countries', CountryViewSet, base_name='countries')
 router.register(r'chartdata', ChartDataViewSet, base_name='chartdata')
