@@ -1,0 +1,1 @@
+web: gunicorn gexp_core_manager.wsgi --log-file -

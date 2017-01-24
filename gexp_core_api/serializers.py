@@ -56,8 +56,6 @@ class CategorySerializer(serializers.Serializer):
         return instance
 
 
-
-
 class CountrySerializer(serializers.Serializer):
     id = serializers.IntegerField(read_only=True)
     name = serializers.CharField(max_length=256)
