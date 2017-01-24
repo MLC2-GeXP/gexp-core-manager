@@ -25,7 +25,7 @@ SECRET_KEY = 'bqk#8n(a-1edn$p70-gm808ki2l!6_9)g+dj4^5duzp@i97649'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['gexp-core-api.herokuapp.com']
+ALLOWED_HOSTS = [u'gexp-core-api.herokuapp.com', u'127.0.0.1', u'localhost']
 
 
 # Application definition
@@ -39,6 +39,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'gexp_core_api',
     'rest_framework',
+    'crispy_forms',
+    'markdown_deux',
+    'pagedown',
 ]
 
 MIDDLEWARE = [
@@ -133,3 +136,9 @@ STATIC_ROOT = os.path.join(os.path.dirname(BASE_DIR), "static_cdn")
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), "media_cdn")
 
+REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+    ),
+}
