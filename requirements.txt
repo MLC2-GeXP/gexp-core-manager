@@ -14,3 +14,4 @@ pyaml==16.12.2
 pyparsing==2.0.1
 python-dateutil==1.5
 requests==2.12.1
+django-cors-headers==2.0.0
