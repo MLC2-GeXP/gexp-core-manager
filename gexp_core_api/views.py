@@ -30,9 +30,13 @@ countries = {
 
 class SearchView(APIView):
     '''
-    /search/{subcategoryId}/{populationId}/?countryIds=[1,2,3,4,5]&time={fromYear}-{toYear}
+    Get data after applying filters(category/country/population/dates).
     '''
     def get(self, request, *args, **kwargs):
+        '''
+        Handles the GET request
+        /search/{subcategoryId}/{populationId}/?countryIds=[1,2,3,4,5]&time={fromYear}-{toYear}
+        '''
 
         get_arg1 = request.GET.get('countryIds', None)
         get_arg2 = request.GET.get('time', None)
@@ -48,6 +52,48 @@ class SearchView(APIView):
             "populationId" : kwargs['populationId']
         }
         return Response(result, status=status.HTTP_200_OK)
+
+
+class DataView(APIView):
+    '''
+    Creating new data for specific subcategory && country && year using a form or upload a csv/xls file.
+    \n When uploading an csv/xls file : if the subcategory does not exists, it gets created.
+
+    '''
+
+    def put(self, request, *args, **kwargs):
+        '''
+        Handles the PUT request to update data.
+        /data
+        '''
+        if request.FILES:
+            print('file: ' + request.FILES[file])
+        else:
+            print(request.data)
+
+        return Response(request.data, status=status.HTTP_200_OK)
+
+
+    def post(self, request, *args, **kwargs):
+        '''
+        Handles the POST request to create new data.
+        /data
+        '''
+        if request.FILES:
+            print('file: ' + request.FILES[file])
+        else:
+            print(request.data)
+
+        return Response(request.data, status=status.HTTP_201_CREATED)
+
+
+    def delete(self, request, *args, **kwargs):
+        '''
+        Handles the POST request to create new data.
+        /data
+        '''
+
+        return Response(request.data, status=status.HTTP_200_OK)
 
 
 class CategoryViewSet(viewsets.ViewSet):
@@ -84,4 +130,32 @@ class CountryViewSet(viewsets.ViewSet):
     def list(self, request):
         '''On GET request'''
         serializer = serializers.CountrySerializer(instance=countries.values(), many=True)
+        return Response(serializer.data)
+
+chartDatas = {
+
+    1: {
+        'years' : [1950, 1960, 1970, 1980, 1990, 2000],
+        'datasets' : [
+            {
+                'country_name' : 'Germany',
+                'data' : [1.2, 2.5, 5.2, 100, 102, 104.4]
+            },
+            {
+                'country_name' : 'Brazil',
+                'data' : [2.2, 3.5, 4.2, 105, 106, 107.8]
+            },
+            {
+                'country_name' : 'USA',
+                'data' : [10.2, 20.5, 50.2, 100, 12, 104]
+            }
+        ]
+    }
+}
+
+class ChartDataViewSet(viewsets.ViewSet):
+    serializer_class = serializers.ChartDataSerializer
+
+    def list(self, request):
+        serializer = serializers.ChartDataSerializer(instance=chartDatas.values(), many=True)
         return Response(serializer.data)

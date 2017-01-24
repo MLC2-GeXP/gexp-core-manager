@@ -18,11 +18,12 @@ from django.contrib import admin
 from django.contrib.auth.decorators import login_required
 from rest_framework import routers
 
-from gexp_core_api.views import CategoryViewSet, CountryViewSet, SearchView
+from gexp_core_api.views import CategoryViewSet, CountryViewSet, SearchView, DataView, ChartDataViewSet
 
 router = routers.DefaultRouter()
 router.register(r'categories', CategoryViewSet, base_name='categories')
 router.register(r'countries', CountryViewSet, base_name='countries')
+router.register(r'chartdata', ChartDataViewSet, base_name='chartdata')
 
 urlpatterns = router.urls + [
     url(r'^admin/', admin.site.urls),
@@ -31,5 +32,6 @@ urlpatterns = router.urls + [
     # /search/{subcategoryId}/{populationId}/?countryIds=[1,2,3,4,5]&time={fromYear}-{toYear}
     url(r'^search/(?P<subcategoryId>\d+)/(?P<populationId>\d+)[/]?$', SearchView.as_view(), name='search'),
     url(r'^search[/]?$', SearchView.as_view(), name='search'),
-
+    url(r'^data[/]?$', DataView.as_view(), name='data'),
+    url(r'^data/upload[/]?$', DataView.as_view(), name='data'),
 ]
