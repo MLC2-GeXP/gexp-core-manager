@@ -25,7 +25,7 @@ SECRET_KEY = 'bqk#8n(a-1edn$p70-gm808ki2l!6_9)g+dj4^5duzp@i97649'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['gexp-core-api.herokuapp.com']
 
 
 # Application definition
