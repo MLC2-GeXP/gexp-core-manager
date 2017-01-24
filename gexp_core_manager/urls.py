@@ -31,9 +31,8 @@ urlpatterns = router.urls + [
     url(r'^admin/', admin.site.urls),
 
     # this URL passes resource_id in **kw to SearchView
-    # /search/{subcategoryId}/{populationId}/?countryIds=[1,2,3,4,5]&time={fromYear}-{toYear}
-    url(r'^search/(?P<subcategoryId>\d+)/(?P<populationId>\d+)[/]?$', SearchView.as_view(), name='search'),
-    url(r'^search[/]?$', SearchView.as_view(), name='search'),
+    # /data/{subcategoryId}/{populationId}/?countryIds=[1,2,3,4,5]&time={fromYear}-{toYear}
+    url(r'^data/(?P<subcategoryId>\d+)/(?P<populationId>\d+)[/]?$', SearchView.as_view(), name='search'),
     url(r'^data[/]?$', DataView.as_view(), name='data'),
     url(r'^data/upload[/]?$', DataView.as_view(), name='data'),
 ]
