@@ -18,8 +18,12 @@ from django.contrib import admin
 from django.contrib.auth.decorators import login_required
 from rest_framework import routers
 
-from gexp_core_api.views import CategoryViewSet, CountryViewSet, SearchView, DataView, ChartDataViewSet, \
+from gexp_core_api.services import services
+from gexp_core_api.views import CategoryViewSet, CountryViewSet, DataView, ChartDataViewSet, \
     InitialDataViewSet
+
+services.get_categories_subcategories()
+services.get_countries()
 
 router = routers.DefaultRouter()
 router.register(r'initialdata', InitialDataViewSet, base_name='initial data')
@@ -31,8 +35,8 @@ urlpatterns = router.urls + [
     url(r'^admin/', admin.site.urls),
 
     # this URL passes resource_id in **kw to SearchView
-    # /data/{subcategoryId}/{populationId}/?countryIds=[1,2,3,4,5]&time={fromYear}-{toYear}
-    url(r'^data/(?P<subcategoryId>\d+)/(?P<populationId>\d+)[/]?$', SearchView.as_view(), name='search'),
+    # /data/${categoryId}/${subcategoryId}/${indicatorId}/${populationId}/?countryIds=[1,2,3,4,5]&time={fromYear}-{toYear}
+    url(r'^data/(?P<categoryId>\d+)/(?P<subcategoryId>\d+)/(?P<indicatorId>\d+)/[/]?$', DataView.as_view(), name='data'),
     url(r'^data[/]?$', DataView.as_view(), name='data'),
     url(r'^data/upload[/]?$', DataView.as_view(), name='data'),
 ]

@@ -5,100 +5,19 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from gexp_core_api.models import Subcategory, Category, Country
+
 from gexp_core_api import serializers
-from gexp_core_api.model_definitions.definitions import Category, Subcategory, Country, Population
+from gexp_core_api.model_definitions.definitions import Population
+from gexp_core_api.services import services
+from gexp_core_api.services.services import search_data
 
-chartDatas = {
 
-    1: {
-        'years' : [1950, 1960, 1970, 1980, 1990, 2000],
-        'datasets' : [
-            {
-                'country_name' : 'Germany',
-                'data' : [1.2, 2.5, 5.2, 100, 102, 104.4]
-            },
-            {
-                'country_name' : 'Brazil',
-                'data' : [2.2, 3.5, 4.2, 105, 106, 107.8]
-            },
-            {
-                'country_name' : 'USA',
-                'data' : [10.2, 20.5, 50.2, 100, 12, 104]
-            }
-        ]
-    }
-}
-categories = {
-    1: Category(id=1, name='Health', subcategories=[
-        Subcategory(id=11, name='Healthy subcategory1'),
-        Subcategory(id=12, name='Healthy subcategory2'),
-        Subcategory(id=13, name='Healthy subcategory3')
-    ]),
-    2: Category(id=2, name='Education', subcategories=[
-        Subcategory(id=22, name='Education subcategory')
-    ]),
-    3: Category(id=3, name='Living standards', subcategories=[
-        Subcategory(id=33, name='Living subcategory')
-    ])
-}
-countries = {
-    1: Country(id=1, name='Germany'),
-    2: Country(id=2, name='USA'),
-    3: Country(id=3, name='Brazil')
-}
-initialData = {
-    1: {
-        'countries' : [
-            Country(id=1, name='Germany'),
-            Country(id=2, name='USA'),
-            Country(id=3, name='Brazil')
-        ],
-        'categories': [
-            Category(id=1, name='Health', subcategories=[
-                    Subcategory(id=11, name='Healthy subcategory1'),
-                    Subcategory(id=12, name='Healthy subcategory2'),
-                    Subcategory(id=13, name='Healthy subcategory3')
-                ]),
-            Category(id=2, name='Education', subcategories=[
-                    Subcategory(id=22, name='Education subcategory')
-                ]),
-            Category(id=3, name='Living standards', subcategories=[
-                    Subcategory(id=33, name='Living subcategory')
-                ])
-        ],
-        'population': [
+population = [
             Population(id=1, gender='Male'),
             Population(id=2, gender='Female'),
             Population(id=3, gender='All')
         ]
-    }
-}
-
-
-class SearchView(APIView):
-    '''
-    Get data after applying filters(category/country/population/dates).
-    '''
-    def get(self, request, *args, **kwargs):
-        '''
-        Handles the GET request
-        /search/{subcategoryId}/{populationId}/?countryIds=[1,2,3,4,5]&time={fromYear}-{toYear}
-        '''
-
-        get_arg1 = request.GET.get('countryIds', None)
-        get_arg2 = request.GET.get('time', None)
-
-        print(get_arg1)
-        print(get_arg2)
-        print(kwargs['subcategoryId'], kwargs['populationId'])
-
-        result = {
-            "countryIds" : get_arg1,
-            "time" : get_arg2,
-            "subcategoryId": kwargs['subcategoryId'],
-            "populationId" : kwargs['populationId']
-        }
-        return Response(result, status=status.HTTP_200_OK)
 
 
 class DataView(APIView):
@@ -107,6 +26,29 @@ class DataView(APIView):
     \n When uploading an csv/xls file : if the subcategory does not exists, it gets created.
 
     '''
+    def get(self, request, *args, **kwargs):
+        '''
+        Handles the GET request
+        /data/{subcategoryId}/{populationId}/?countryIds=[1,2,3,4,5]&time={fromYear}-{toYear}
+        '''
+
+        get_arg1 = request.GET.get('countryIds', None)
+        get_arg2 = request.GET.get('time', None)
+
+        params = {
+            "countryIds" : get_arg1,
+            "time" : get_arg2,
+            "subcategoryId": kwargs['subcategoryId'],
+            "categoryId": kwargs['categoryId'],
+            "indicatorId": kwargs['indicatorId'],
+        }
+
+        response = search_data(params)
+
+        if response:
+            return Response(response, status=status.HTTP_200_OK)
+
+        return Response({}, status=status.HTTP_404_NOT_FOUND)
 
     def put(self, request, *args, **kwargs):
         '''
@@ -150,10 +92,12 @@ class CategoryViewSet(viewsets.ViewSet):
 
     # Required for the Browsable API renderer to have a nice form.
     serializer_class = serializers.CategorySerializer
+    queryset = Category.objects.all()
 
     def list(self, request):
         '''On GET request'''
-        serializer = serializers.CategorySerializer(instance=categories.values(), many=True)
+        # categs = services.get_categories_subcategories()
+        serializer = serializers.CategorySerializer(instance=self.queryset, many=True)
         return Response(serializer.data)
 
 
@@ -162,7 +106,7 @@ class SubcategoryViewSet(viewsets.ViewSet):
     serializer_class = serializers.SubcategorySerializer
 
     def list(self, request):
-        serializer = serializers.SubcategorySerializer(instance=categories.values(), many=True)
+        serializer = serializers.SubcategorySerializer(instance=self.queryset, many=True)
         return Response(serializer.data)
 
 
@@ -173,10 +117,11 @@ class CountryViewSet(viewsets.ViewSet):
 
     # Required for the Browsable API renderer to have a nice form.
     serializer_class = serializers.CountrySerializer
+    queryset = Country.objects.all()
 
     def list(self, request):
         '''On GET request'''
-        serializer = serializers.CountrySerializer(instance=countries.values(), many=True)
+        serializer = serializers.CountrySerializer(instance=self.queryset, many=True)
         return Response(serializer.data)
 
 
@@ -192,5 +137,17 @@ class InitialDataViewSet(viewsets.ViewSet):
     serializer_class = serializers.InitialDataSerializer
 
     def list(self, request):
-        serializer = serializers.InitialDataSerializer(instance=initialData.values(), many=True)
+        categories_list = Category.objects.all()
+        population_list = [
+            Population(id=1, gender='Male'),
+            Population(id=2, gender='Female'),
+            Population(id=3, gender='All')
+        ]
+
+        initialData = {
+            'categories' : categories_list,
+            'population' : population_list
+        }
+
+        serializer = serializers.InitialDataSerializer(instance=initialData)
         return Response(serializer.data)
